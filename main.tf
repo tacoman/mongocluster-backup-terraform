@@ -52,6 +52,14 @@ resource "aws_lambda_function" "backup_lambda" {
   }
 }
 
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.backup_lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.backup.arn
+}
+
 resource "aws_iam_policy" "execution_role_policy" {
   name        = join("", [var.function_name, "_policy"])
   path        = "/"
